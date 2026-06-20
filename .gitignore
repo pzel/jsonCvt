@@ -1,1 +1,8 @@
 bin/runTests
+
+
+# dependencies managed by smlpkg
+lib/github.com/diku-dk/
+lib/github.com/pzel/assert/
+lib/github.com/pzel/sml-either/
+lib/github.com/pzel/sml-prelude/
