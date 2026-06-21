@@ -17,10 +17,6 @@ fun succeed (v: 'a) (j: Json.t) : 'a result = INR v
 fun fail (v: string) (j: Json.t) : 'a result = INL v
 
 local
-(* todo hide these via signature *)
-fun e (onNone: 'a) (opt : 'b option) : ('a, 'b) either =
-    case opt of SOME b => INR b | _ => INL onNone;
-
 val ts = Json.toString
 fun parseInt s = Int.fromString s handle Overflow => NONE
 fun parseReal s = Real.fromString s handle _ => NONE
@@ -32,12 +28,12 @@ fun null (v: 'a) (j: Json.t) : 'a result =
 
 fun int (j: Json.t) : int result =
     case j
-     of Json.NUMBER n => e ("Can't convert to int: " ^n) (parseInt n)
+     of Json.NUMBER n => Either.fromOption ("Can't convert to int: " ^n) (parseInt n)
       | jv => INL \> "Not a number: " ^ ts jv
 
 fun real (j: Json.t) : real result =
     case j
-     of Json.NUMBER n => e ("Can't convert to real: " ^n) (parseReal n)
+     of Json.NUMBER n => Either.fromOption ("Can't convert to real: " ^n) (parseReal n)
       | jv => INL \> "Not a number: " ^ ts jv
 
 fun bool (j: Json.t) : bool result =
@@ -54,7 +50,7 @@ fun field (v: string) (p: 'a decoder) (j: Json.t) : 'a result =
     let fun fieldError j = "No field '"^v^"' in: " ^ ts j
     in case j
         of Json.OBJECT obj => Json.objLook obj v
-                                           >| e (fieldError j)
+                                           >| Either.fromOption (fieldError j)
                                            >| Either.bindRight p
          | _ => INL \> fieldError j
     end

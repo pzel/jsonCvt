@@ -18,6 +18,6 @@ clean:
 test: bin/test
 	./$<
 
-bin/test: $(wildcard $(LIBDIR)/**/**)
+bin/test: $(wildcard $(LIBDIR)/**)
 	@$(MLCOMP) $(MLCOMP_FLAGS) $(MLB_PATH) -output $@ $(LIBDIR)/test/test.mlb
 
