@@ -166,10 +166,61 @@ val decodeStringTests = [
 
 ]
 
+val composeTests = [
+  It "can compose two field parsers" (
+    fn _=> let val op == = Assert.eq PolyML.makestring
+               open JsonCvt
+               val input = "{\"a\":21,\"b\":\"hello\"}"
+               val p = map2 (field "a" int) (field "b" string)
+               val result = JsonCvt.decodeString p input
+           in result == INR (21 & "hello")
+           end)
+ ,It "can compose three field parsers" (
+    fn _=> let val op == = Assert.eq PolyML.makestring
+               open JsonCvt
+               val input = "{\"a\":21,\"b\":\"hello\",\"v\":true}"
+               val p = map3 (field "a" int) (field "b" string) (field "v" bool)
+               val result = JsonCvt.decodeString p input
+           in result == INR (21 & "hello" & true)
+           end)
+ ,It "can compose two field parsers: failure of the first" (
+    fn _=> let val op == = Assert.eq PolyML.makestring
+               open JsonCvt
+               val input = "{\"a\":21,\"b\":\"hello\"}"
+               val p = map2 (field "a" string) (field "b" int)
+               val result = JsonCvt.decodeString p input
+           in result == INL "Not a string: 21"
+           end)
+ ,It "can compose two field parsers: failure of the second" (
+    fn _=> let val op == = Assert.eq PolyML.makestring
+               open JsonCvt
+               val input = "{\"a\":21,\"b\":\"hello\"}"
+               val p = map2 (field "a" int) (field "b" int)
+               val result = JsonCvt.decodeString p input
+           in result == INL "Not a number: \"hello\""
+           end)
+
+]
 
 
-val allTests = decodeValueTests @ decodeStringTests
+val nestedTests = [
+  It "can nest a parser" (
+    fn _=> let val op == = Assert.eq PolyML.makestring
+               open JsonCvt
+               val input = "{\"a\":21,\"b\":{\"c\":22,\"d\":23}}"
+               val inner = map2 (field "c" int) (field "d" int)
+               val p = map2 (field "a" int) (field "b" inner)
+               val result = JsonCvt.decodeString p input
+           in result == INR (21 & (22 & 23))
+           end)
 
+]
+
+
+val allTests = decodeValueTests
+               @ decodeStringTests
+               @ composeTests
+               @ nestedTests
 
 fun main () =
-    CommandLine.arguments() >| runTestsWith allTests
+    runTestsWith \> allTests \> CommandLine.arguments()

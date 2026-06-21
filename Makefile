@@ -1,4 +1,3 @@
-
 LIBDIR := lib/github.com/pzel/jsonCvt
 MLCOMP ?= polymlb
 MLB_PATH := -mlb-path-var "SMLPKG $(shell pwd)/lib"
@@ -15,9 +14,6 @@ clean:
 	-@rm -f bin/*
 
 .PHONY: test
-test: bin/test
-	./$<
-
-bin/test: $(wildcard $(LIBDIR)/**)
-	@$(MLCOMP) $(MLCOMP_FLAGS) $(MLB_PATH) -output $@ $(LIBDIR)/test/test.mlb
-
+test:
+	@$(MLCOMP) $(MLCOMP_FLAGS) $(MLB_PATH) -output ./bin/test $(LIBDIR)/test/test.mlb
+	./bin/test

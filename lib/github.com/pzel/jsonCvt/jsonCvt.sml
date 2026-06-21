@@ -16,12 +16,11 @@ fun decodeString (d: 'a decoder) (s: string) : 'a result =
 fun succeed (v: 'a) (j: Json.t) : 'a result = INR v
 fun fail (v: string) (j: Json.t) : 'a result = INL v
 
-local
+
+(* todo hide these via ascription *)
 val ts = Json.toString
 fun parseInt s = Int.fromString s handle Overflow => NONE
 fun parseReal s = Real.fromString s handle _ => NONE
-
-in
 
 fun null (v: 'a) (j: Json.t) : 'a result =
     case j of Json.NULL => INR v | _ => INL \> "Not null: " ^ ts j
@@ -55,6 +54,19 @@ fun field (v: string) (p: 'a decoder) (j: Json.t) : 'a result =
          | _ => INL \> fieldError j
     end
 
+fun map2 (p1: 'a decoder) (p2: 'b decoder) (j: Json.t) : ('a, 'b) product result =
+    case (p1 j, p2 j)
+     of (INR r1, INR r2) => INR (r1 & r2)
+      | (INL e1,  _) => INL e1
+      | (_, INL e2) => INL e2
 
-end
+fun map3 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (j: Json.t) 
+    : (('a, 'b) product , 'c) product result =
+    case (p1 j, p2 j, p3 j)
+     of (INR r1, INR r2, INR r3) => INR (r1 & r2 & r3)
+      | (INL e1,  _, _) => INL e1
+      | (_, INL e2, _ ) => INL e2
+      | (_, _, INL e3 ) => INL e3
+
+
 end
