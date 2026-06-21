@@ -2,7 +2,7 @@ package github.com/pzel/jsonCvt
 
 require {
   github.com/diku-dk/sml-json 0.1.1 #724043b6d05791a62f91ce999e9ebbed22dd227d
-  github.com/pzel/assert 0.9.3 #dff0038113a4b45f0d3dbb65b1070ced5364adb9
   github.com/pzel/sml-prelude 0.7.0 #dd763b6d0a944ed5142e10f68cbfdc2e627a782c
   github.com/pzel/sml-either 0.0.4 #a168b6aaafb3e7332ac8e34f837e793ae8684a29
+  github.com/pzel/assert 0.9.3 #dff0038113a4b45f0d3dbb65b1070ced5364adb9
 }

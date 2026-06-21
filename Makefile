@@ -1,19 +1,23 @@
+
 LIBDIR := lib/github.com/pzel/jsonCvt
-MLB_PATH := -mlb-path-var 'SMLPKG $(shell pwd)/lib'
+MLCOMP ?= polymlb
+MLB_PATH := -mlb-path-var "SMLPKG $(shell pwd)/lib"
+
+ifeq ($(MLCOMP), polymlb)
+MLCOMP_FLAGS=-ann "ignoreFiles call-main.sml"
+endif
 
 .PHONY: all
-all:	 clean test
+all:	 test
 
 .PHONY: clean
 clean:
-	rm -f bin/* tmp/*
+	-@rm -f bin/*
 
 .PHONY: test
-test: bin/runTests $(shell find $(LIBDIR) | grep *.sql)
-	./bin/runTests
+test: bin/test
+	./$<
 
-bin/runTests: $(shell find $(LIBDIR))
-	@polymlb $(MLB_PATH) \
-	-output bin/runTests \
-	$(LIBDIR)/test/runTests.mlb
+bin/test: $(wildcard $(LIBDIR)/**/**)
+	@$(MLCOMP) $(MLCOMP_FLAGS) $(MLB_PATH) -output $@ $(LIBDIR)/test/test.mlb
 
