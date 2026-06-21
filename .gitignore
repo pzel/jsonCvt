@@ -1,4 +1,8 @@
 bin/*
 lib/*
-
-!lib/github.com/pzel/jsonCvt
+!lib/github.com/
+lib/github.com/*
+!lib/github.com/pzel/
+lib/github.com/pzel/*
+!lib/github.com/pzel/jsonCvt/
+!lib/github.com/pzel/jsonCvt/**
