@@ -181,7 +181,7 @@ val composeTests = [
                val input = "{\"a\":21,\"b\":\"hello\"}"
                val p = map2 (field "a" int) (field "b" string)
                val result = JsonCvt.decodeString p input
-           in result == INR (21 & "hello")
+           in result == INR (21,  "hello")
            end)
  ,It "can compose three field parsers" (
     fn _=> let val op == = Assert.eq PolyML.makestring
@@ -189,7 +189,7 @@ val composeTests = [
                val input = "{\"a\":21,\"b\":\"hello\",\"v\":true}"
                val p = map3 (field "a" int) (field "b" string) (field "v" bool)
                val result = JsonCvt.decodeString p input
-           in result == INR (21 & "hello" & true)
+           in result == INR (21, "hello", true)
            end)
  ,It "can compose two field parsers: failure of the first" (
     fn _=> let val op == = Assert.eq PolyML.makestring
@@ -207,6 +207,31 @@ val composeTests = [
                val result = JsonCvt.decodeString p input
            in result == INL "Not a number: \"hello\""
            end)
+  ,It "can map3~9" (
+     fn _=> let val op == = Assert.eq PolyML.makestring
+                open JsonCvt
+                val input = "{\"a\":1,\"b\":2,\"c\":3,\"d\":4,\"e\":5,\"f\":6,\"g\":7,\"h\":8,\"i\":9}"
+                fun p (fieldName) = field fieldName int
+                val p3 = map3 (p "a") (p "b") (p "c")
+                val p4 = map4 (p "a") (p "b") (p "c") (p "d")
+                val p5 = map5 (p "a") (p "b") (p "c") (p "d") (p "e")
+                val p6 = map6 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
+                val p7 = map7 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
+                              (p "g")
+                val p8 = map8 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
+                              (p "g") (p "h")
+                val p9 = map9 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
+                              (p "g") (p "h") (p "i")
+                val doit = fn parser => decodeString parser input
+                val _ = INR (1,2,3) =?= doit p3
+                val _ = INR (1,2,3,4) =?= doit p4
+                val _ = INR (1,2,3,4,5) =?= doit p5
+                val _ = INR (1,2,3,4,5,6) =?= doit p6
+                val _ = INR (1,2,3,4,5,6,7) =?= doit p7
+                val _ = INR (1,2,3,4,5,6,7,8) =?= doit p8
+                val _ = INR (1,2,3,4,5,6,7,8,9) =?= doit p9
+            in Assert.succeed "all parsers worked"
+            end)
 
 ]
 
@@ -219,9 +244,8 @@ val nestedTests = [
                val inner = map2 (field "c" int) (field "d" int)
                val p = map2 (field "a" int) (field "b" inner)
                val result = JsonCvt.decodeString p input
-           in result == INR (21 & (22 & 23))
+           in result == INR (21, (22, 23))
            end)
-
 ]
 
 

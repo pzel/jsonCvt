@@ -5,5 +5,4 @@ require {
   github.com/pzel/sml-prelude 0.7.0 #dd763b6d0a944ed5142e10f68cbfdc2e627a782c
   github.com/pzel/sml-either 0.1.0 #477a68d127677f862299757315f32d46d560c07a
   github.com/pzel/assert 0.9.3 #dff0038113a4b45f0d3dbb65b1070ced5364adb9
-  github.com/pzel/fold 0.0.1 #4198e58857357af2cd02854d5cb2429fb0a3fa30
 }
