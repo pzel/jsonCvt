@@ -16,6 +16,7 @@ fun decodeString (d: 'a decoder) (s: string) : 'a result =
 fun succeed (v: 'a) (j: Json.t) : 'a result = INR v
 fun fail (v: string) (j: Json.t) : 'a result = INL v
 
+fun raw (j: Json.t) : Json.t result = INR j
 
 (* todo hide these via ascription *)
 val ts = Json.toString

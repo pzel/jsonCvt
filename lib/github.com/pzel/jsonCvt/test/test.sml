@@ -73,6 +73,14 @@ val decodeStringTests = [
        in result == INL "Not a number: \"forty\""
        end)
  (* primitive parsers *)
+ ,It "raw: passes through the raw Json.t" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           val input = "{\"a\":null}"
+           val result = JsonCvt.decodeString JsonCvt.raw input
+           val resultS = Either.mapRight Json.toString result
+       in resultS == INR input
+       end)
  ,It "null: successfully decodes NULL into the provided sml value" (
     fn _=>
        let val op == = Assert.eq PolyML.makestring
