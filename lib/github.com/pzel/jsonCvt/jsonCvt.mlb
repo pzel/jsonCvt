@@ -4,7 +4,9 @@ local
   $(SMLPKG)/github.com/pzel/sml-prelude/prelude.mlb
 in
   $(SMLPKG)/github.com/diku-dk/sml-json/json.mlb
-  $(SMLPKG)/github.com/pzel/sml-either/either.mlb
-  jsonCvt.sml
   (* signature JSON and structure Json *)
+  $(SMLPKG)/github.com/pzel/sml-either/either.mlb
+  jsonCvt.sig
+  jsonCvt.sml
+  (* signature JSON_CVT and structure JsonCvt *)
 end
