@@ -193,7 +193,7 @@ val complexParserTests = [
            val result = decodeString p input
        in result == INR [1,2,3]
        end)
- ,It "list parsing failure" (
+ ,It "list parsing: inner failure" (
     fn _=>
        let val op == = Assert.eq PolyML.makestring
            open JsonCvt
@@ -202,7 +202,15 @@ val complexParserTests = [
            val result = decodeString p input
        in result == INL "Failed to parse list: [1, 2, 3, false]"
        end)
-
+ ,It "list parsing: outer failure" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":false}"
+           val p = field "f" (list int)
+           val result = decodeString p input
+       in result == INL "Not a list: false"
+       end)
 ]
 
 

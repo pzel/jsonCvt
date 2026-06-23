@@ -4,8 +4,8 @@ struct
 open Either.Cons
 
 type 'a decoder = Json.t -> (string,'a) either
-type 'a result = (string, 'a) either
-type error = string
+type cvtError = string
+type 'a result = (cvtError, 'a) either
 
 fun decodeValue (d: 'a decoder) (v: Json.t) : 'a result = d v;
 
@@ -63,7 +63,7 @@ fun list (p: 'a decoder) (j: Json.t) : 'a list result =
         in if allGood then INR (map Option.valOf res)
            else INL \> "Failed to parse list: " ^ ts j
         end
-      | _ => INL \> "Not a list" ^ ts j
+      | _ => INL \> "Not a list: " ^ ts j
 
 fun map2 (p1: 'a decoder) (p2: 'b decoder) (j: Json.t)
     : ('a * 'b) result =
