@@ -277,12 +277,38 @@ val complexParserTests = [
 ]
 
 
-val composeTests = [
-  It "can compose two field parsers" (
+fun tup2 a b = (a,b)
+fun tup3 a b c = (a,b,c)
+fun tup4 a b c d = (a,b,c,d)
+fun tup5 a b c d e = (a,b,c,d,e)
+fun tup6 a b c d e f = (a,b,c,d,e,f)
+fun tup7 a b c d e f g = (a,b,c,d,e,f,g)
+fun tup8 a b c d e f g h = (a,b,c,d,e,f,g,h)
+fun tup9 a b c d e f g h i = (a,b,c,d,e,f,g,h,i)
+
+
+val mapTests = [
+  It "can map a fun over a parser" (
+    fn _=> let val op == = Assert.eq PolyML.makestring
+               open JsonCvt
+               val input = "{\"a\":21}"
+               val p = map (fn i => i * 10) (field "a" int)
+               val result = JsonCvt.decodeString p input
+           in result == INR 210
+           end)
+ ,It "can map a fun over a parser: failure" (
+    fn _=> let val op == = Assert.eq PolyML.makestring
+               open JsonCvt
+               val input = "{\"a\":21}"
+               val p = map String.size (field "a" string)
+               val result = JsonCvt.decodeString p input
+           in result == INL "Not a string: 21"
+           end)
+ ,It "can compose two field parsers" (
     fn _=> let val op == = Assert.eq PolyML.makestring
                open JsonCvt
                val input = "{\"a\":21,\"b\":\"hello\"}"
-               val p = map2 (field "a" int) (field "b" string)
+               val p = map2 tup2 (field "a" int) (field "b" string)
                val result = JsonCvt.decodeString p input
            in result == INR (21,  "hello")
            end)
@@ -290,7 +316,7 @@ val composeTests = [
     fn _=> let val op == = Assert.eq PolyML.makestring
                open JsonCvt
                val input = "{\"a\":21,\"b\":\"hello\",\"v\":true}"
-               val p = map3 (field "a" int) (field "b" string) (field "v" bool)
+               val p = map3 tup3 (field "a" int) (field "b" string) (field "v" bool)
                val result = JsonCvt.decodeString p input
            in result == INR (21, "hello", true)
            end)
@@ -298,7 +324,7 @@ val composeTests = [
     fn _=> let val op == = Assert.eq PolyML.makestring
                open JsonCvt
                val input = "{\"a\":21,\"b\":\"hello\"}"
-               val p = map2 (field "a" string) (field "b" int)
+               val p = map2 tup2 (field "a" string) (field "b" int)
                val result = JsonCvt.decodeString p input
            in result == INL "Not a string: 21"
            end)
@@ -306,24 +332,24 @@ val composeTests = [
     fn _=> let val op == = Assert.eq PolyML.makestring
                open JsonCvt
                val input = "{\"a\":21,\"b\":\"hello\"}"
-               val p = map2 (field "a" int) (field "b" int)
+               val p = map2 tup2 (field "a" int) (field "b" int)
                val result = JsonCvt.decodeString p input
            in result == INL "Not a number: \"hello\""
            end)
-  ,It "can map3~9" (
+  ,It "can map3 3~9" (
      fn _=> let val op == = Assert.eq PolyML.makestring
                 open JsonCvt
                 val input = "{\"a\":1,\"b\":2,\"c\":3,\"d\":4,\"e\":5,\"f\":6,\"g\":7,\"h\":8,\"i\":9}"
                 fun p (fieldName) = field fieldName int
-                val p3 = map3 (p "a") (p "b") (p "c")
-                val p4 = map4 (p "a") (p "b") (p "c") (p "d")
-                val p5 = map5 (p "a") (p "b") (p "c") (p "d") (p "e")
-                val p6 = map6 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
-                val p7 = map7 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
+                val p3 = map3 tup3 (p "a") (p "b") (p "c")
+                val p4 = map4 tup4 (p "a") (p "b") (p "c") (p "d")
+                val p5 = map5 tup5 (p "a") (p "b") (p "c") (p "d") (p "e")
+                val p6 = map6 tup6 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
+                val p7 = map7 tup7 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
                               (p "g")
-                val p8 = map8 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
+                val p8 = map8 tup8 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
                               (p "g") (p "h")
-                val p9 = map9 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
+                val p9 = map9 tup9 (p "a") (p "b") (p "c") (p "d") (p "e") (p "f")
                               (p "g") (p "h") (p "i")
                 val doit = fn parser => decodeString parser input
                 val _ = INR (1,2,3) =?= doit p3
@@ -344,8 +370,8 @@ val nestedTests = [
     fn _=> let val op == = Assert.eq PolyML.makestring
                open JsonCvt
                val input = "{\"a\":21,\"b\":{\"c\":22,\"d\":23}}"
-               val inner = map2 (field "c" int) (field "d" int)
-               val p = map2 (field "a" int) (field "b" inner)
+               val inner = map2 tup2 (field "c" int) (field "d" int)
+               val p = map2 tup2 (field "a" int) (field "b" inner)
                val result = JsonCvt.decodeString p input
            in result == INR (21, (22, 23))
            end)
@@ -354,7 +380,7 @@ val nestedTests = [
 val allTests = decodeValueTests
                @ decodeStringTests
                @ complexParserTests
-               @ composeTests
+               @ mapTests
                @ nestedTests
 
 fun main () =

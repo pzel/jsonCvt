@@ -88,49 +88,56 @@ fun index (idx: int) (p: 'a decoder) (j: Json.t) : 'a result =
         end
       | _ => INL \> "Not indexable: " ^ ts j
 
+fun map (f: 'a -> 'b) (p: 'a decoder)  (j: Json.t)
+    : 'b result = Either.mapRight f (p j)
 
-fun map2 (p1: 'a decoder) (p2: 'b decoder) (j: Json.t)
-    : ('a * 'b) result =
+fun map2 (f: 'a -> 'b -> 'c)
+         (p1: 'a decoder) (p2: 'b decoder) (j: Json.t)
+    : 'c result =
     case (p1 j, p2 j)
-     of (INR r1, INR r2) => INR (r1, r2)
+     of (INR r1, INR r2) => INR (f r1 r2)
       | (INL e1,  _) => INL e1
       | (_, INL e2) => INL e2
 
-fun map3 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (j: Json.t)
-    : ('a * 'b * 'c) result =
+fun map3 (f: 'a -> 'b -> 'c -> 'd)
+         (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (j: Json.t)
+    : 'd result =
     case (p1 j, p2 j, p3 j)
-     of (INR r1, INR r2, INR r3) => INR (r1, r2, r3)
+     of (INR r1, INR r2, INR r3) => INR (f r1 r2 r3)
       | (INL e1,  _, _) => INL e1
       | (_, INL e2, _ ) => INL e2
       | (_, _, INL e3 ) => INL e3
 
-fun map4 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder) (j: Json.t)
-    : ('a * 'b * 'c * 'd) result =
+fun map4 (f: 'a -> 'b -> 'c -> 'd -> 'e)
+        (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder) (j: Json.t)
+    : 'e result =
     case (p1 j, p2 j, p3 j, p4 j)
-     of (INR r1, INR r2, INR r3, INR r4) => INR (r1, r2, r3, r4)
+     of (INR r1, INR r2, INR r3, INR r4) => INR (f r1 r2 r3 r4)
       | (INL e1,  _, _, _) => INL e1
       | (_, INL e2, _ , _) => INL e2
       | (_, _, INL e3 , _) => INL e3
       | (_, _, _ , INL e4) => INL e4
 
-fun map5 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
+fun map5 (f: 'a -> 'b -> 'c -> 'd -> 'e -> 'f)
+        (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
          (p5: 'e decoder) (j: Json.t)
-    : ('a * 'b * 'c * 'd * 'e) result =
+    : 'f result =
     case (p1 j, p2 j, p3 j, p4 j, p5 j)
      of (INR r1, INR r2, INR r3, INR r4, INR r5) =>
-        INR (r1, r2, r3, r4, r5)
+        INR (f r1 r2 r3 r4 r5)
       | (INL e1,  _, _, _, _) => INL e1
       | (_, INL e2, _ , _, _) => INL e2
       | (_, _, INL e3 , _, _) => INL e3
       | (_, _, _ , INL e4, _) => INL e4
       | (_, _, _ , _, INL e5) => INL e5
 
-fun map6 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
+fun map6 (f: 'a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g)
+         (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
          (p5: 'e decoder) (p6: 'f decoder) (j: Json.t)
-    : ('a * 'b * 'c * 'd * 'e * 'f) result =
+    : 'g result =
     case (p1 j, p2 j, p3 j, p4 j, p5 j, p6 j)
      of (INR r1, INR r2, INR r3, INR r4, INR r5, INR r6) =>
-        INR (r1, r2, r3, r4, r5, r6)
+        INR (f r1 r2 r3 r4 r5 r6)
       | (INL e1,  _, _, _, _, _) => INL e1
       | (_, INL e2, _ , _, _, _) => INL e2
       | (_, _, INL e3 , _, _, _) => INL e3
@@ -139,12 +146,13 @@ fun map6 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
       | (_, _, _ , _, _, INL e6) => INL e6
 
 
-fun map7 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
-         (p5: 'e decoder) (p6: 'f decoder) (p7: 'g decoder) (j: Json.t)
-    : ('a * 'b * 'c * 'd * 'e * 'f * 'g) result =
+fun map7 (f: 'a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g -> 'h)
+        (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
+        (p5: 'e decoder) (p6: 'f decoder) (p7: 'g decoder) (j: Json.t)
+    : 'h result =
     case (p1 j, p2 j, p3 j, p4 j, p5 j, p6 j, p7 j)
      of (INR r1, INR r2, INR r3, INR r4, INR r5, INR r6, INR r7) =>
-        INR (r1, r2, r3, r4, r5, r6, r7)
+        INR (f r1 r2 r3 r4 r5 r6 r7)
       | (INL e1,  _, _, _, _, _, _) => INL e1
       | (_, INL e2, _ , _, _, _, _) => INL e2
       | (_, _, INL e3 , _, _, _, _) => INL e3
@@ -153,13 +161,14 @@ fun map7 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
       | (_, _, _ , _, _, INL e6, _) => INL e6
       | (_, _, _ , _, _, _, INL e7) => INL e7
 
-fun map8 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
+fun map8 (f: 'a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g -> 'h -> 'i)
+         (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
          (p5: 'e decoder) (p6: 'f decoder) (p7: 'g decoder) (p8: 'h decoder)
          (j: Json.t)
-    : ('a * 'b * 'c * 'd * 'e * 'f * 'g * 'h) result =
+    : 'i result =
     case (p1 j, p2 j, p3 j, p4 j, p5 j, p6 j, p7 j, p8 j)
      of (INR r1, INR r2, INR r3, INR r4, INR r5, INR r6, INR r7, INR r8) =>
-        INR (r1, r2, r3, r4, r5, r6, r7, r8)
+        INR (f r1 r2 r3 r4 r5 r6 r7 r8)
       | (INL e1,  _, _, _, _, _, _, _) => INL e1
       | (_, INL e2, _ , _, _, _, _, _) => INL e2
       | (_, _, INL e3 , _, _, _, _, _) => INL e3
@@ -169,13 +178,14 @@ fun map8 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
       | (_, _, _ , _, _, _, INL e7, _) => INL e7
       | (_, _, _ , _, _, _, _, INL e8) => INL e8
 
-fun map9 (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
+fun map9 (f: 'a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g -> 'h -> 'i -> 'j)
+         (p1: 'a decoder) (p2: 'b decoder) (p3: 'c decoder) (p4: 'd decoder)
          (p5: 'e decoder) (p6: 'f decoder) (p7: 'g decoder) (p8: 'h decoder)
          (p9: 'i decoder) (j: Json.t)
-    : ('a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i) result =
+    : 'j result =
     case (p1 j, p2 j, p3 j, p4 j, p5 j, p6 j, p7 j, p8 j, p9 j)
      of (INR r1, INR r2, INR r3, INR r4, INR r5, INR r6, INR r7, INR r8, INR r9) =>
-        INR (r1, r2, r3, r4, r5, r6, r7, r8, r9)
+        INR (f r1 r2 r3 r4 r5 r6 r7 r8 r9)
       | (INL e1,  _, _, _, _, _, _, _, _) => INL e1
       | (_, INL e2, _ , _, _, _, _, _, _) => INL e2
       | (_, _, INL e3 , _, _, _, _, _, _) => INL e3
