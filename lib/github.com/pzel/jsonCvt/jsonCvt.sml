@@ -64,7 +64,7 @@ fun list (p: 'a decoder) (j: Json.t) : 'a list result =
      of Json.ARRAY l =>
         let val res = map (Either.asRight o p) l
             val allGood = List.all Option.isSome res
-        in if allGood then INR (map Option.valOf res)
+        in if allGood then INR \> map Option.valOf res
            else INL \> "Failed to parse list: "^ts j
         end
       | _ => INL \> "Not a list: "^ts j
@@ -86,7 +86,7 @@ fun index (idx: int) (p: 'a decoder) (j: Json.t) : 'a result =
         let fun err () = concat [
                   "Index out of bounds: idx=", Int.toString idx,
                   " len=", Int.toString (List.length l)]
-            val item = (INR (List.nth(l, idx)) handle Subscript => INL \> err())
+            val item = INR \> List.nth(l, idx) handle Subscript => INL \> err()
         in Either.bindRight p item
         end
       | _ => INL \> "Not indexable: "^ts j
