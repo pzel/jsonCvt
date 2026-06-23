@@ -174,6 +174,38 @@ val decodeStringTests = [
 
 ]
 
+(* list : Decoder a -> Decoder (List a)
+
+Decode a JSON array into an Elm List.
+
+decodeString (list int) "[1,2,3]"       == Ok [1,2,3]
+decodeString (list bool) "[true,false]" == Ok [True,False
+
+*)
+
+val complexParserTests = [
+  It "parses lists" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":[1,2,3]}"
+           val p = field "f" (list int)
+           val result = decodeString p input
+       in result == INR [1,2,3]
+       end)
+ ,It "list parsing failure" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":[1,2,3,false]}"
+           val p = field "f" (list int)
+           val result = decodeString p input
+       in result == INL "Failed to parse list: [1, 2, 3, false]"
+       end)
+
+]
+
+
 val composeTests = [
   It "can compose two field parsers" (
     fn _=> let val op == = Assert.eq PolyML.makestring
@@ -248,9 +280,9 @@ val nestedTests = [
            end)
 ]
 
-
 val allTests = decodeValueTests
                @ decodeStringTests
+               @ complexParserTests
                @ composeTests
                @ nestedTests
 

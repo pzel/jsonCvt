@@ -55,6 +55,16 @@ fun field (v: string) (p: 'a decoder) (j: Json.t) : 'a result =
          | _ => INL \> fieldError j
     end
 
+fun list (p: 'a decoder) (j: Json.t) : 'a list result =
+    case j
+     of Json.ARRAY l =>
+        let val res = map (Either.asRight o p) l
+            val allGood = List.all Option.isSome res
+        in if allGood then INR (map Option.valOf res)
+           else INL \> "Failed to parse list: " ^ ts j
+        end
+      | _ => INL \> "Not a list" ^ ts j
+
 fun map2 (p1: 'a decoder) (p2: 'b decoder) (j: Json.t)
     : ('a * 'b) result =
     case (p1 j, p2 j)
