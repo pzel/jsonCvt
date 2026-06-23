@@ -76,6 +76,19 @@ fun at (keys: string list) (p: 'a decoder) (j: Json.t) : 'a result =
     in build keys j
     end
 
+fun index (idx: int) (p: 'a decoder) (j: Json.t) : 'a result =
+    case j
+     of Json.ARRAY l =>
+        let val item = (INR (List.nth(l, idx))
+                         handle Subscript => INL \> concat ["Index out of bounds: idx=",
+                                                            Int.toString idx,
+                                                            " len=",
+                                                            Int.toString (List.length l)])
+        in Either.bindRight p item
+        end
+      | _ => INL \> "Not indexable: " ^ ts j
+
+
 fun map2 (p1: 'a decoder) (p2: 'b decoder) (j: Json.t)
     : ('a * 'b) result =
     case (p1 j, p2 j)

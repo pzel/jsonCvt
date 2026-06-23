@@ -247,6 +247,33 @@ val complexParserTests = [
            val result = decodeString p input
        in result == INL "No field 'x' in: {\"h\":1, \"hh\":2}"
     end)
+ ,It "index returns item at index" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":[10,11,12]}"
+           val p = field "f" (index 0 int)
+           val result = decodeString p input
+       in result == INR 10
+    end)
+ ,It "index returns oob at overly large index" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":[10,11,12]}"
+           val p = field "f" (index 10 int)
+           val result = decodeString p input
+       in result == INL "Index out of bounds: idx=10 len=3"
+    end)
+ ,It "index unindexable value" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":111111}"
+           val p = field "f" (index 10 int)
+           val result = decodeString p input
+       in result == INL "Not indexable: 111111"
+    end)
 ]
 
 
