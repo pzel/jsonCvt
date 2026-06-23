@@ -49,9 +49,9 @@ fun string (j: Json.t) : string result =
 fun field (v: string) (p: 'a decoder) (j: Json.t) : 'a result =
     let fun fieldError j = "No field '"^v^"' in: " ^ ts j
     in case j
-        of Json.OBJECT obj => Json.objLook obj v
-                                           >| Either.fromOption (fieldError j)
-                                           >| Either.bindRight p
+        of Json.OBJECT obj => (Json.objLook obj v
+                              >| Either.fromOption (fieldError j)
+                              >| Either.bindRight p)
          | _ => INL \> fieldError j
     end
 
@@ -64,6 +64,11 @@ fun list (p: 'a decoder) (j: Json.t) : 'a list result =
            else INL \> "Failed to parse list: " ^ ts j
         end
       | _ => INL \> "Not a list: " ^ ts j
+
+fun nullable (p: 'a decoder) (j: Json.t) : 'a option result =
+    case j
+     of Json.NULL => INR NONE
+      | _ => p j </ Either.mapRight SOME
 
 fun map2 (p1: 'a decoder) (p2: 'b decoder) (j: Json.t)
     : ('a * 'b) result =

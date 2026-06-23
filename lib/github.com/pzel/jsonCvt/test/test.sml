@@ -184,7 +184,34 @@ decodeString (list bool) "[true,false]" == Ok [True,False
 *)
 
 val complexParserTests = [
-  It "parses lists" (
+  It "parses nullables successfully" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":1}"
+           val p = field "f" (nullable int)
+           val result = decodeString p input
+       in result == INR (SOME 1)
+       end)
+  ,It "parses nullables successfully (null)" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":null}"
+           val p = field "f" (nullable int)
+           val result = decodeString p input
+       in result == INR NONE
+       end)
+  ,It "failes parsing nullables" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":false}"
+           val p = field "f" (nullable int)
+           val result = decodeString p input
+       in result == INL "Not a number: false"
+       end)
+ ,It "parses lists" (
     fn _=>
        let val op == = Assert.eq PolyML.makestring
            open JsonCvt
