@@ -24,30 +24,34 @@ fun parseInt s = Int.fromString s handle Overflow => NONE
 fun parseReal s = Real.fromString s handle _ => NONE
 
 fun null (v: 'a) (j: Json.t) : 'a result =
-    case j of Json.NULL => INR v | _ => INL \> "Not null: " ^ ts j
+    case j of Json.NULL => INR v | _ => INL \> "Not null: "^ts j
 
 fun int (j: Json.t) : int result =
     case j
-     of Json.NUMBER n => Either.fromOption ("Can't convert to int: " ^n) (parseInt n)
-      | jv => INL \> "Not a number: " ^ ts jv
+     of Json.NUMBER n =>
+        Either.fromOption ("Can't convert to int: " ^n) (parseInt n)
+      | jv =>
+        INL \> "Not a number: "^ts jv
 
 fun real (j: Json.t) : real result =
     case j
-     of Json.NUMBER n => Either.fromOption ("Can't convert to real: " ^n) (parseReal n)
-      | jv => INL \> "Not a number: " ^ ts jv
+     of Json.NUMBER n =>
+        Either.fromOption ("Can't convert to real: " ^n) (parseReal n)
+      | jv =>
+        INL \> "Not a number: "^ts jv
 
 fun bool (j: Json.t) : bool result =
     case j
      of Json.BOOL b => INR b
-      | jv => INL \> "Not a bool: " ^ ts jv
+      | jv => INL \> "Not a bool: "^ts jv
 
 fun string (j: Json.t) : string result =
     case j
      of Json.STRING s => INR s
-      | _ => INL \> "Not a string: " ^ ts j
+      | _ => INL \> "Not a string: "^ts j
 
 fun field (v: string) (p: 'a decoder) (j: Json.t) : 'a result =
-    let fun fieldError j = "No field '"^v^"' in: " ^ ts j
+    let fun fieldError j = "No field '"^v^"' in: "^ts j
     in case j
         of Json.OBJECT obj => (Json.objLook obj v
                               >| Either.fromOption (fieldError j)
@@ -61,9 +65,9 @@ fun list (p: 'a decoder) (j: Json.t) : 'a list result =
         let val res = map (Either.asRight o p) l
             val allGood = List.all Option.isSome res
         in if allGood then INR (map Option.valOf res)
-           else INL \> "Failed to parse list: " ^ ts j
+           else INL \> "Failed to parse list: "^ts j
         end
-      | _ => INL \> "Not a list: " ^ ts j
+      | _ => INL \> "Not a list: "^ts j
 
 fun nullable (p: 'a decoder) (j: Json.t) : 'a option result =
     case j
@@ -71,8 +75,8 @@ fun nullable (p: 'a decoder) (j: Json.t) : 'a option result =
       | _ => p j </ Either.mapRight SOME
 
 fun at (keys: string list) (p: 'a decoder) (j: Json.t) : 'a result =
-    let fun build([]) = p
-          | build(k::ks) = field k (build ks)
+    let fun build [] = p
+          | build (k::ks) = field k (build ks)
     in build keys j
     end
 
@@ -86,7 +90,7 @@ fun index (idx: int) (p: 'a decoder) (j: Json.t) : 'a result =
                                                             Int.toString (List.length l)])
         in Either.bindRight p item
         end
-      | _ => INL \> "Not indexable: " ^ ts j
+      | _ => INL \> "Not indexable: "^ts j
 
 fun map (f: 'a -> 'b) (p: 'a decoder)  (j: Json.t)
     : 'b result = Either.mapRight f (p j)
