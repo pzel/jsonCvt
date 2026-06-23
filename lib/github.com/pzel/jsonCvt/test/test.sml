@@ -174,15 +174,6 @@ val decodeStringTests = [
 
 ]
 
-(* list : Decoder a -> Decoder (List a)
-
-Decode a JSON array into an Elm List.
-
-decodeString (list int) "[1,2,3]"       == Ok [1,2,3]
-decodeString (list bool) "[true,false]" == Ok [True,False
-
-*)
-
 val complexParserTests = [
   It "parses nullables successfully" (
     fn _=>
@@ -238,6 +229,24 @@ val complexParserTests = [
            val result = decodeString p input
        in result == INL "Not a list: false"
        end)
+ ,It "traverses paths with 'at'" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":{\"g\":{\"h\":1,\"hh\":2},\"gg\":3}}"
+           val p = at ["f", "g", "h"] int
+           val result = decodeString p input
+       in result == INR 1
+    end)
+ ,It "at: reports which field was wrong" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           open JsonCvt
+           val input = "{\"f\":{\"g\":{\"h\":1,\"hh\":2},\"gg\":3}}"
+           val p = at ["f", "g", "x"] int
+           val result = decodeString p input
+       in result == INL "No field 'x' in: {\"h\":1, \"hh\":2}"
+    end)
 ]
 
 

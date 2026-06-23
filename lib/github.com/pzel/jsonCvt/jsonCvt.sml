@@ -70,6 +70,12 @@ fun nullable (p: 'a decoder) (j: Json.t) : 'a option result =
      of Json.NULL => INR NONE
       | _ => p j </ Either.mapRight SOME
 
+fun at (keys: string list) (p: 'a decoder) (j: Json.t) : 'a result =
+    let fun build([]) = p
+          | build(k::ks) = field k (build ks)
+    in build keys j
+    end
+
 fun map2 (p1: 'a decoder) (p2: 'b decoder) (j: Json.t)
     : ('a * 'b) result =
     case (p1 j, p2 j)
