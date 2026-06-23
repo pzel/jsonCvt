@@ -3,10 +3,9 @@ struct
 
 open Either.Cons
 
-type 'a decoder = Json.t -> (string,'a) either
 type cvtError = string
 type 'a result = (cvtError, 'a) either
-
+type 'a decoder = Json.t -> 'a result
 
 val ts = Json.toString
 fun parseInt s = Int.fromString s handle Overflow => NONE
