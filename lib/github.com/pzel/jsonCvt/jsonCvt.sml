@@ -83,11 +83,10 @@ fun at (keys: string list) (p: 'a decoder) (j: Json.t) : 'a result =
 fun index (idx: int) (p: 'a decoder) (j: Json.t) : 'a result =
     case j
      of Json.ARRAY l =>
-        let val item = (INR (List.nth(l, idx))
-                         handle Subscript => INL \> concat ["Index out of bounds: idx=",
-                                                            Int.toString idx,
-                                                            " len=",
-                                                            Int.toString (List.length l)])
+        let fun err () = concat [
+                  "Index out of bounds: idx=", Int.toString idx,
+                  " len=", Int.toString (List.length l)]
+            val item = (INR (List.nth(l, idx)) handle Subscript => INL \> err())
         in Either.bindRight p item
         end
       | _ => INL \> "Not indexable: "^ts j
