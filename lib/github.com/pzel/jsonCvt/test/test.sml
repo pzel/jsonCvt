@@ -107,6 +107,14 @@ val decodeStringTests = [
            val result = JsonCvt.decodeString p input
        in result == INR "alphabet"
        end)
+ ,It "string: interprets escapes in JSON string" (
+    fn _=>
+       let val op == = Assert.eq PolyML.makestring
+           val input = "{\"a\":\"alphabet\\nsoup\\n\"}"
+           val p = JsonCvt.field "a" JsonCvt.string
+           val result = JsonCvt.decodeString p input
+       in result == INR "alphabet\nsoup\n"
+       end)
  ,It "string: fails on non-JSON string" (
     fn _=>
        let val op == = Assert.eq PolyML.makestring

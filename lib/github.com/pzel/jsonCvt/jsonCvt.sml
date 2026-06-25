@@ -46,7 +46,9 @@ fun bool (j: Json.t) : bool result =
 
 fun string (j: Json.t) : string result =
     case j
-     of Json.STRING s => INR s
+     of Json.STRING s =>
+        Either.fromOption ("Invalid string: " ^s)
+                          (String.fromCString s)
       | _ => INL \> "Not a string: "^ts j
 
 fun field (v: string) (p: 'a decoder) (j: Json.t) : 'a result =
